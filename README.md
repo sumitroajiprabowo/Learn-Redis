@@ -513,12 +513,15 @@ redis-cli
 ## Transaction
 
 ### Mark the start of a transaction block
+
 command
+
 ```
 > multi
 ```
 
 example
+
 ```
 > multi
 OK
@@ -529,14 +532,18 @@ QUEUED
 ```
 
 ### Execute all commands issued after MULTI
+
 command
+
 ```
 > exec
 1) OK
 ```
 
 ### Discard all command issued after MULTI
+
 command
+
 ```
 > discard
 OK
@@ -553,8 +560,13 @@ monitor
 ## Server Information
 
 ### Get information and statistics about the server
+
 ```
 info
+```
+
+```
+info memory | info cluster | info stats | etc
 ```
 
 ### Get the value of a configuration parameter
@@ -563,8 +575,236 @@ info
 config
 ```
 
+1.  CONFIG <subcommand> [<arg> [value] [opt] ...]. Subcommands are:
+2.  GET <pattern>
+3.                                      Return parameters matching the glob-like <pattern> and their values.
+4.  SET <directive> <value>
+5.                                      Set the configuration <directive> to <value>.
+6.  RESETSTAT
+7.                                      Reset statistics reported by the INFO command.
+8.  REWRITE
+9.                                      Rewrite the configuration file.
+10. HELP
+11.     Prints this help.
+
 ### Return top entries from the slowlog
 
 ```
 slowlog
+```
+
+1.  SLOWLOG <subcommand> [<arg> [value] [opt] ...]. Subcommands are:
+2.  GET [<count>]
+3.                                       Return top <count> entries from the slowlog (default: 10). Entries are
+4.                                       made of:
+5.                                       id, timestamp, time in microseconds, arguments array, client IP and port,
+6.                                       client name
+7.  LEN
+8.                                       Return the length of the slowlog.
+9.  RESET
+10.     Reset the slowlog.
+11. HELP
+12.     Prints this help.
+
+## Client Connection
+
+### Get the lists of client connection
+
+```
+> client list
+```
+
+### Return the client ID for the current connection
+
+```
+> client id
+
+```
+
+### Kill the client connection
+
+```
+> client kill <ip:port>
+```
+
+## Security
+
+### Network Security
+
+For security reasons, Redis does not allow connections from the outside world.
+example using bind address in redis.conf
+
+```
+bind IP_ADDRESS
+```
+
+test the connection
+
+```
+docker-compose -f redis-with-security/docker-compose.yml up -d
+```
+
+Connect using redis-client from docker
+
+```
+docker container exec -it redis-client /bin/sh
+```
+
+```
+redis-cli -h redis
+```
+
+Could not connect to Redis at redis:6379: Connection refused
+not connected
+
+Connect using localhost with redis-cli command using redis-server or redis-cli in my pc
+
+```
+redis-cli -h localhost
+```
+
+### Protected Mode
+
+using protected-mode in redis.conf
+
+```
+protected-mode yes
+```
+
+## Authentication
+
+Authentication is a mechanism that allows only authorized clients to access a Redis server.
+
+```
+user <username> ... acl_rules ...
+```
+
+example
+
+```
+user default on +@connection
+user bowo on +@all >secret
+```
+
+Run Redis server with user authentication
+
+```
+docker-compose -f redis-with-acl/docker-compose.yml up -d
+```
+
+Connect using redis-client from docker
+
+```
+docker container exec -it redis-client /bin/sh
+# redis-cli -h redis
+> auth bowo secret
+OK
+```
+
+```
+> ping
+PONG
+```
+
+### Authorization
+
+Authorization is a mechanism that allows only authorized clients to access a Redis server.
+Edit the acl_rules in redis.conf with All Permissions
+
+```
+user bowo on +@all ~* >secret
+```
+
+Access to the server using redis-cli command and login
+
+```
+redis-cli -h redis
+> auth bowo secret
+OK
+> get test
+(nil)
+> set test test
+OK
+> get test
+"test"
+```
+
+Add user to redis.conf with read permission
+
+```
+user test on +@read ~* >test
+```
+
+Test the connection
+
+```
+redis-cli -h redis
+> auth test test
+OK
+> set name name
+(error) NOPERM this user has no permissions to run the 'set' command or its subcommand
+```
+
+Error to set because of no permission
+
+```
+> get test
+"test"
+```
+
+Check using redis-cli command and user tester with write permission
+
+```
+redis-cli -h redis
+> auth tester tester
+OK
+> set test test
+OK
+> get test
+"test"
+```
+
+## Persistent Disk
+
+### Synchronously save the dataset to disk
+
+```
+save
+```
+
+### Asynchronously save the dataset to disk
+
+```
+bgsave
+```
+
+## Eviction
+
+### Maxmemory
+
+```
+maxmemory <bytes>
+```
+
+example
+
+```
+maxmemory 100mb
+maxmemory 10gb
+```
+
+### Policy
+
+LRU -> LRU means Least Recently Used
+LFU -> LFU means Least Frequently Used
+
+```
+maxmemory-policy <policy>
+
+```
+
+example
+
+```
+maxmemory-policy allkeys-lfu
 ```
