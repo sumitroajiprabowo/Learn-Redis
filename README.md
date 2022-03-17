@@ -6,10 +6,16 @@
 docker-compose -f redis-default/docker-compose.yml up -d
 ```
 
-### Redis with config
+### Redis with pipeline
 
 ```
 docker-compose -f redis-with-config/docker-compose.yml up -d
+```
+
+### Redis with acl
+
+```
+docker-compose -f redis-with-acl/docker-compose.yml up -d
 ```
 
 ### Redis with config
@@ -577,13 +583,13 @@ config
 
 1.  CONFIG <subcommand> [<arg> [value] [opt] ...]. Subcommands are:
 2.  GET <pattern>
-3.                                      Return parameters matching the glob-like <pattern> and their values.
+3.                                        Return parameters matching the glob-like <pattern> and their values.
 4.  SET <directive> <value>
-5.                                      Set the configuration <directive> to <value>.
+5.                                        Set the configuration <directive> to <value>.
 6.  RESETSTAT
-7.                                      Reset statistics reported by the INFO command.
+7.                                        Reset statistics reported by the INFO command.
 8.  REWRITE
-9.                                      Rewrite the configuration file.
+9.                                        Rewrite the configuration file.
 10. HELP
 11.     Prints this help.
 
@@ -595,12 +601,12 @@ slowlog
 
 1.  SLOWLOG <subcommand> [<arg> [value] [opt] ...]. Subcommands are:
 2.  GET [<count>]
-3.                                       Return top <count> entries from the slowlog (default: 10). Entries are
-4.                                       made of:
-5.                                       id, timestamp, time in microseconds, arguments array, client IP and port,
-6.                                       client name
+3.                                         Return top <count> entries from the slowlog (default: 10). Entries are
+4.                                         made of:
+5.                                         id, timestamp, time in microseconds, arguments array, client IP and port,
+6.                                         client name
 7.  LEN
-8.                                       Return the length of the slowlog.
+8.                                         Return the length of the slowlog.
 9.  RESET
 10.     Reset the slowlog.
 11. HELP
@@ -800,7 +806,6 @@ LFU -> LFU means Least Frequently Used
 
 ```
 maxmemory-policy <policy>
-
 ```
 
 example
