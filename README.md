@@ -1,4 +1,4 @@
-## Deploy Redis using docker
+## Deploy Redis using Docker
 
 ### Redis Default
 
